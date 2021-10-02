@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define TL3 "D:\\QuanLySach.txt"
 typedef struct QLSach
 {
 	char MaSach[21];
@@ -35,66 +36,71 @@ void Xuat(Sach &s)
 	printf("\nNam xuat ban: %d",s.NamXuatBan);
 	printf("\nGia ban: %d",s.GiaBan);
 }
-struct Node
-{
+typedef struct Stack{
 	Sach info;
-	Node *pNext;
-};
-typedef Node *PtrNode;
-void Init(PtrNode &pHead)
-{
-	pHead = NULL;
+	struct Stack* next;
+}Stack;
+ 
+//Khoi tao ngan xep
+void Init (Stack &S){
+   S = NULL;
 }
-bool IsEmpty(PtrNode pHead)
-{
-	return pHead == NULL;
+//Kiem tra ngan xep rong
+int Isempty(Stack S){
+    return S==NULL;
 }
-PtrNode CreateNode(Sach s)
-{
-	PtrNode p;
-	p = new Node;
 
-	p->info = s;
-	p->pNext = NULL;
+Stack CreateNode(int x){
+	Stack p=new Node;
+	p->info = x;
+	p->next = NULL;
 	return p;
 }
-
-void InsertLast(PtrNode &pHead, PtrNode pNew)
+void InsertFirst(Stack &S, Stack pNew)
 {
-	if (IsEmpty(pHead))
-		pHead = pNew;
+	if(Isempty(S))
+		S = pNew;
 	else
 	{
-		PtrNode p = pHead;
-		while (p->pNext != NULL)
-			p = p->pNext;
-		p->pNext = pNew;
+		pNew->next = S;
+		S = pNew;
 	}
 }
-void Input(PtrNode &pHead)
+
+// Them du lieu ngan xep
+bool Push(Stack &S, int newItem)
 {
-	Sach x; //int -> S 
-	Init(pHead);
-	int n;
-	printf("Moi nhap so luong sach: ");
-	scanf("%d", &n);
-	for (int i = 0; i < n; i++)
-	{
-		printf("\nMoi nhap thong tin sach thu thu %d: ", i + 1);
-		Nhap(x);
-		PtrNode pNew = CreateNode(x);
-		InsertLast(pHead, pNew);
-	}
+	Stack pNew = CreateNode(newItem);
+	InsertFirst(S,pNew);
 }
-void ShowList(PtrNode pHead)
+
+// Lay du lieu ra khoi ngan xep
+bool Pop(Stack &S, int &outItem)
 {
-	Node *p = pHead;
-	int i = 0;
-	while (p != NULL)
+	if(s==NULL) return false;
+	Stack pTop = S;
+	S = S->next;
+	outItem = pTop->info;
+	delete pTop;
+	return true;
+}
+
+
+
+void DocFile(Sach s[]){
+	FILE *f = fopen(TL3, "r");
+	for(int i = 0; i<n; i++)
 	{
-		printf("\n Thong tin sinh vien thu %d: ", i + 1);
-		Xuat(p->info);
-		p = p->pNext;
-		i++;
+		fscanf(f,"%s\t%s\t%s\t\t%s\t%d\t%d",&s[i].MaSach,&s[i].TenSach,&s[i].TacGia,&s[i].TheLoai,&s[i].NamXuatBan,&s[i].GiaBan);
 	}
+	fclose(f);
+}
+void Ghifile(Sach s[], int n){
+		FILE *f=fopen(TL3,"w+");
+		fprintf(f,"\nMaSach\tTenSach\tTacGia\t\tTheLoai\tNamXB\tGiaBan\n");
+	for(int i = 0;i < n;++i)
+	{
+		fprintf(f,"%s\t%s\t%s\t\t%s\t%d\t%d",s[i].MaSach,s[i].TenSach,s[i].TacGia,s[i].TheLoai,s[i].NamXuatBan,s[i].GiaBan);
+		fprintf(f,"\n");
+	}fclose(f);
 }
