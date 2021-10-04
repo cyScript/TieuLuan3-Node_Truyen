@@ -1,231 +1,440 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define TL3 "D:\\QuanLySach.txt"
+#include <string.h>
+
 #define MAX 100
 
-typedef struct Date
+typedef struct QLTruyen
 {
-	int Ngay;
-	int Thang;
-	int Nam;
-};
-typedef struct QLSach
-{
-	char MaSach[21];
-	char TenSach[51];
-	char TacGia[21];
-	char TheLoai[16];
-	int NamXuatBan;
-	int GiaBan;
-	Date NgayThue;
-	Date NgayTra;
-} Sach;
+	char MaTruyen[13];
+	char TenTruyen[41];
+	char TacGia[31];
+	char TheLoai[25];
+	int SoLuong;
+	float GiaThue;
+	char NgayThue[11];
+} Tr;
 
-void NhapDate(Date &d)
-{
-	// int ngay, thang, nam;
-	printf("Nhap ngay,thang,nam: ");
-	scanf("%d%d%d", &d.Ngay, &d.Thang, &d.Nam);
-	switch (d.Thang)
-	{
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-	case 8:
-	case 10:
-	case 12:
-
-		if (d.Ngay > 0 && d.Ngay <= 31)
-		{
-
-			printf("Ngay %d thang %d nam %d hop le\n", d.Ngay, d.Thang, d.Nam);
-			break;
-		}
-
-		else
-
-		{
-			printf("Ngay %d thang %d nam %d ko hop le\n", d.Ngay, d.Thang, d.Nam);
-			break;
-		}
-	case 4:
-	case 6:
-	case 9:
-	case 11:
-		if (d.Ngay <= 30 && d.Ngay > 0)
-		{
-			printf("Ngay %d thang %d nam %d hop le\n", d.Ngay, d.Thang, d.Nam);
-			break;
-		}
-		else
-		{
-			printf("Ngay %d thang %d nam %d ko hop le\n", d.Ngay, d.Thang, d.Nam);
-			break;
-		}
-	case 2:
-		if (d.Ngay <= 28 && d.Ngay > 0)
-		{
-			printf("Ngay %d thang %d nam %d hop le\n", d.Ngay, d.Thang, d.Nam);
-			break;
-		}
-		else
-		{
-			printf("Ngay %d thang %d nam %d ko hop le\n", d.Ngay, d.Thang, d.Nam);
-			break;
-		}
-	default:
-		printf("Ngay %d thang %d nam ko hop le\n", d.Ngay, d.Thang, d.Nam);
-		break;
-	}
-	// if (d.Nam % 400 == 0)
-	// 	printf("Nam %d la nam nhuan", d.Nam);
-	// else
-	// {
-	// 	if (d.Nam % 4 == 0 && d.Nam % 100 != 0)
-	// 		printf("Nam %d la nam nhuan", d.Nam);
-	// 	else
-	// 		printf("Nam %d ko phai la nam nhuan", d.Nam);
-	// }
-}
-
-void Nhap(Sach &s)
+void Nhap(Tr &s)
 {
 	fflush(stdin);
-	printf("Nhap ma sach: ");
-	gets(s.MaSach);
-	printf("Nhap ten sach: ");
-	gets(s.TenSach);
+	printf("\nNhap ma truyen: ");
+	gets(s.MaTruyen);
+	printf("Nhap ten truyen: ");
+	gets(s.TenTruyen);
 	printf("Nhap ten tac gia: ");
 	gets(s.TacGia);
-	printf("Nhap the loai sach: ");
+	printf("Nhap the loai: ");
 	gets(s.TheLoai);
-	printf("Nhap nam xuat ban: ");
-	scanf("%d", &s.NamXuatBan);
 	printf("Nhap gia ban: ");
-	scanf("%d", &s.GiaBan);
+	scanf("%f", &s.GiaThue);
+	printf("Nhap so luong: ");
+	scanf("%d", &s.SoLuong);
 	printf("Nhap ngay thue:\n");
-	NhapDate(s.NgayThue);
-	printf("\nNhap ngay tra:\n");
-	NhapDate(s.NgayTra);
+	fflush(stdin);
+	gets(s.NgayThue);
 }
-void Xuat(Sach &s)
+void Xuat(Tr t)
 {
-	printf("\nMa sach: %s", s.MaSach);
-	printf("\nTen sach: %s", s.TenSach);
-	printf("\nTen tac gia: %s", s.TacGia);
-	printf("\nThe loai sach: %s", s.TheLoai);
-	printf("\nNam xuat ban: %d", s.NamXuatBan);
-	printf("\nGia ban: %d", s.GiaBan);
+	printf("%-12s", t.MaTruyen);
+	printf("%-41s", t.TenTruyen);
+	printf("%-31s", t.TacGia);
+	printf("%-25s", t.TheLoai);
+	printf("%-12d", t.SoLuong);
+	printf("%-14.2f", t.GiaThue);
+	printf("%-13s\n", t.NgayThue);
 }
-void NhapDs(Sach s[], int n)
+struct Stack
 {
-	for (int i = 0; i < n; i++)
+	Tr info; //so phan tu n
+	struct Stack *next;
+};
+typedef Stack *S;
+void Init(S &s)
+{
+	s = NULL;
+}
+bool IsEmpty(S s)
+{
+	return s == NULL;
+}
+S CreateNode(Tr x)
+{
+	S p = new Stack;
+	p->info = x;
+	p->next = NULL;
+	return p;
+}
+void InsertFirst(S &s, S pNew)
+{
+	if (IsEmpty(s))
+		s = pNew;
+	else
 	{
-		printf("Nhap thong tin quyen sach thu %d: \n", i + 1);
-		Nhap(s[i]);
+		pNew->next = s;
+		s = pNew;
 	}
 }
-void XuatDs(Sach s[], int n)
+
+bool Push(S &s, Tr newItem)
 {
-	for (int i = 0; i < n; i++)
-		Xuat(s[i]);
+	S pNew = CreateNode(newItem);
+	InsertFirst(s, pNew);
 }
-struct Node
+bool Pop(S &s, Tr &outItem)
 {
-	Sach info;
-	Node *next;
-};
-typedef struct Node *Stack;
-// struct Stack
-// {
-// 	Node *pHead;
-// 	Node *pTail;
-// };
-
-//Khoi tao ngan xep
-// void Init(Stack &s)
-// {
-// 	S = NULL;
-// }
-//Kiem tra ngan xep rong
-// bool IsEmpty(Stack s)
-// {
-// 	return (s == NULL);
-// }
-// Node *CreateNode(Sach info)
-// {
-// 	Node *p = new Node();
-// 	if (p == NULL)
-// 	{
-// 		return NULL;
-// 	}
-// 	p->info = info;
-// 	p->next = NULL;
-// 	return p;
-// }
-// void InsertFirst(Stack &S, Stack pNew)
-// {
-// 	if (IsEmpty(S))
-// 		S = pNew;
-// 	else
-// 	{
-// 		pNew->next = S;
-// 		S = pNew;
-// 	}
-// }
-
-// // Them du lieu ngan xep
-// bool Push(Stack &S, int newItem)
-// {
-// 	Stack pNew = CreateNode(newItem);
-// 	InsertFirst(S, pNew);
-// }
-
-// // Lay du lieu ra khoi ngan xep
-// bool Pop(Stack &S, int &outItem)
-// {
-// 	if (s == NULL)
-// 		return false;
-// 	Stack pTop = S;
-// 	S = S->next;
-// 	outItem = pTop->info;
-// 	delete pTop;
-// 	return true;
-// }
-// void DocFile(Sach s[], int n)
-// {
-// 	FILE *f = fopen(TL3, "r");
-// 	if (f == NULL)
-// 		printf("\nDoc file that bai!");
-// 	char tmp[3];
-// 	fscanf(f, "%s", &tmp);
-// 	for (int i = 0; i <= MAX; i++)
-// 	{
-// 		fscanf(f, "%s\t%s\t%s\t\t%s\t%d\t%d", &s[i].MaSach, &s[i].TenSach, &s[i].TacGia, &s[i].TheLoai, &s[i].NamXuatBan, &s[i].GiaBan);
-// 	}
-// 	fclose(f);
-// }
-void GhiFile(Sach s)
+	if (s == NULL)
+		return false;
+	S pTop = s;
+	s = s->next;
+	outItem = pTop->info;
+	delete pTop;
+	return true;
+}
+bool Top(S &s, Tr &outItem)
 {
-	FILE *f = fopen(TL3, "w+");
-	if (f == NULL)
-		printf("\nGhi file that bai!");
-	fprintf(f, "MaSach\tTenSach\tTacGia\t\tTheLoai\tNamXB\tGiaBan\n");
-	for (int i = 0; i < n; ++i)
+	if (s == NULL)
+		return false;
+	S pTop = s;
+	s = s->next;
+	outItem = pTop->info;
+	return true;
+}
+void Swap(Tr &x, Tr &y)
+{
+	Tr t = x;
+	x = y;
+	y = t;
+}
+S SearchNode(S s, char x[11])
+{
+	S pTop = s;
+	while (pTop != NULL)
 	{
-		fprintf_s(f, "%s\t%s\t%s\t\t%s\t%d\t%d", s[i].MaSach, s[i].TenSach, s[i].TacGia, s[i].TheLoai, s[i].NamXuatBan, s[i].GiaBan);
-		fprintf(f, "\n");
+		if (strcmp(pTop->info.TenTruyen, x) == 0)
+		{
+			return pTop;
+			break;
+		}
+		pTop = pTop->next;
+	}
+	return NULL;
+}
+
+void Them_Truyen(S &s)
+{
+	int n;
+	Tr t;
+	printf("\nSo truyen can them: ");
+	scanf("%d", &n);
+	for (int i = 1; i <= n; i++)
+	{
+		Nhap(t);
+		S pTmp = CreateNode(t);
+		InsertFirst(s, pTmp);
+	}
+}
+// Tim truyen theo ten tac gia
+void Tim_Truyen_Theo_TG(S s, char x[21])
+{
+	S pTop = s;
+	while (pTop != NULL)
+	{
+		if (strcmp(pTop->info.TacGia, x) == 0)
+		{
+			Xuat(pTop->info);
+		}
+		pTop = pTop->next;
+	}
+}
+// Tim truyen theo ten X
+S Tim_Truyen_Co_TenX(S s, char X[])
+{
+	S pTop = s;
+	while (pTop != NULL)
+	{
+		if (strcmp(pTop->info.TenTruyen, X) == 0)
+			return pTop;
+		pTop = pTop->next;
+	}
+	return NULL;
+}
+// Tim truyen co gia thue dat nhat
+S TimTruyenGiaMax(S s)
+{
+	S pTop = s;
+	S pM = pTop;
+	S pi = pTop->next;
+	while (pi != NULL) //while(i<n)
+	{
+		if (pi->info.GiaThue > pM->info.GiaThue)
+		{
+			pM = pi;
+		}
+		pi = pi->next;
+	}
+	return pM;
+}
+// Tim truyen co gia thue re nhat
+S TimTruyenGiaMin(S s)
+{
+	S pTop = s;
+	S pM = pTop;
+	S pi = pTop->next;
+	while (pi != NULL) //while(i<n)
+	{
+		if (pi->info.GiaThue < pM->info.GiaThue)
+		{
+			pM = pi;
+		}
+		pi = pi->next;
+	}
+	return pM;
+}
+// Dem tong so luong truyen
+int TongSLTruyen(S s)
+{
+	S p;
+	int dem = 0;
+	p = s;
+	while (p->next != NULL)
+	{
+		dem += p->info.SoLuong;
+		p = p->next;
+	}
+	return dem;
+}
+// Xoa phan tu cuoi
+void Xoa_Sau_Node(S &s, S p)
+{
+	S pSau1 = p->next;
+	if (pSau1 == NULL)
+		p = NULL; //p la phan tu Last or DS chi co 1 phan tu duy nhat
+	S pSau2 = pSau1->next;
+	Swap(p->info, pSau1->info);
+	p->next = pSau2;
+	delete pSau1;
+}
+// Xoa 1 quyen truyen theo ten X
+bool Xoa_1_Truyen(S &s, char x[11])
+{
+	S p = SearchNode(s, x);
+	if (p == NULL)
+		return false;
+	Xoa_Sau_Node(s, p);
+	return true;
+}
+// Tim truyen co so luong max
+int Tim_Truyen_SL_Max(S s)
+{
+	S pTop = s;
+	S pM = pTop;
+	S pi = pTop->next;
+	while (pi->next != NULL)
+	{
+		if (pi->info.SoLuong > pM->info.SoLuong)
+		{
+			pM = pi;
+			Xuat(pM->info);
+		}
+		pi = pi->next;
+	}
+}
+void Input(S &s)
+{
+	Tr t;
+	Init(s);
+	int n;
+	printf("\nMoi nhap so truyen n= ");
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++)
+	{
+		printf("\n Nhap thong tin truyen thu %d: ", i + 1);
+		Nhap(t);
+		Push(s, t);
+	}
+}
+
+void Output(S s)
+{
+	while (!IsEmpty(s))
+	{
+		Tr t;
+		Top(s, t);
+		Xuat(t);
+	}
+}
+// Ham xoa khoang trang
+void DellSpace(char s[])
+{
+	while (s[0] == ' ')
+		strcpy(&s[0], &s[1]);
+	while (s[strlen(s) - 1] == ' ')
+		s[strlen(s) - 1] = '\0';
+	for (int i = 0; i < strlen(s); i++)
+		if (s[i] == ' ' && s[i + 1] == ' ')
+		{
+			strcpy(&s[i], &s[i + 1]);
+			i--;
+		}
+}
+
+// Ghi du lieu vao file
+int DocFile(S &s)
+{
+	FILE *f = fopen("Truyen.inp", "r");
+	if (f == NULL)
+		return 0;
+	int i = 0;
+	while (1)
+	{
+		if (feof(f) != 0)
+			break;
+
+		Tr t;
+		fscanf(f, "%13s", t.MaTruyen);
+		DellSpace(t.MaTruyen);
+		fscanf(f, "%41[^\n]", t.TenTruyen);
+		DellSpace(t.TenTruyen);
+		fscanf(f, "%31[^\n]", t.TacGia);
+		DellSpace(t.TacGia);
+		fscanf(f, "%25[^\n]", t.TheLoai);
+		DellSpace(t.TheLoai);
+
+		fscanf(f, "%12d\n ", &t.SoLuong);
+		fscanf(f, "%14f\n ", &t.GiaThue);
+		fscanf(f, "%12s", t.NgayThue);
+		DellSpace(t.NgayThue);
+
+		Push(s, t);
 	}
 	fclose(f);
+	return 1;
+}
+
+void DongDauTienMenu()
+{
+	printf("\n%c", 218);
+	for (int i = 0; i < 60; i++)
+		printf("%c", 196);
+	printf("%c", 191);
+}
+void DongGiuaMenu()
+{
+	printf("%c", 195);
+	for (int i = 0; i < 60; i++)
+		printf("%c", 196);
+	printf("%c", 180);
+}
+void DongCuoiMenu()
+{
+	printf("\n%c", 192);
+	for (int i = 0; i < 60; i++)
+		printf("%c", 196);
+	printf("%c", 217);
+}
+
+int Menu()
+{
+
+	DongDauTienMenu();
+	printf("\n%c============================= MENU =========================%c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 1 - Them thong tin truyen vao danh sach.                   %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 2 - Xoa thong tin 1 quyen truyen trong danh sach.          %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 3 - Tim truyen theo ten.                                   %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 4 - Tim truyen theo ten tac gia.                           %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 5 - Dem tong so luong truyen co trong kho.                 %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 6 - Tim truyen co so luong nhieu nhat.                     %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 7 - Tim truyen co gia thue re nhat.                        %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 8 - Tim truyen co gia thue dat nhat.                       %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c 9 - Thoat.                                                 %c\n", 179, 179);
+	DongGiuaMenu();
+	printf("\n%c============================================================%c", 179, 179);
+	DongCuoiMenu();
+	printf(" \n>> Chon chuc nang: ");
+	int chon;
+	scanf("%d", &chon);
+	return chon;
+}
+
+void Xuly(S s, int chon)
+{
+	char x[21], c[21];
+	S t, g, tmax, tmin;
+	switch (chon)
+	{
+	case 1:
+		printf("Nhap thong tin Truyen can them:\n");
+		Them_Truyen(s);
+		Output(s);
+		break;
+	case 2:
+		printf("\nnhap ten can xoa");
+		rewind(stdin);
+		gets(x);
+		if (Xoa_1_Truyen(s, x) == true)
+			Output(s);
+		else
+			printf("\nko co ten can xoa trong danh sach");
+		break;
+	case 3:
+		printf("Nhap ten truyen can tim:");
+		rewind(stdin);
+		gets(c);
+		g = Tim_Truyen_Co_TenX(s, c);
+		Xuat(g->info);
+		break;
+	case 4:
+		printf("\nNhap ten tac gia can tim: ");
+		rewind(stdin);
+		gets(x);
+		Tim_Truyen_Theo_TG(s, x);
+		break;
+	case 5:
+		printf("Tong so luong truyen co trong kho:%d", TongSLTruyen(s));
+		break;
+	case 6:
+		printf("Truyen co so luong lon nhat la:\n");
+		Tim_Truyen_SL_Max(s);
+		break;
+	case 7:
+		tmin = TimTruyenGiaMin(s);
+		printf("\nTruyen co gia thue re nhat la:\n ");
+		Xuat(tmin->info);
+		break;
+		break;
+	case 8:
+		tmax = TimTruyenGiaMax(s);
+		printf("\nTruyen co gia thue cao nhat la:\n ");
+		Xuat(tmax->info);
+		break;
+	default:
+		printf("Nhap chuc nang sai. Vui long nhap lai!\n");
+	}
 }
 int main()
 {
-	Stack *s;
-	Sach x[MAX];
-	int n = 3;
-	NhapDs(x, n);
-	GhiFile(x, n);
-	// DocFile(x, n);
-	XuatDs(x, n);
+	S s;
+	Init(s);
+	if (DocFile(s) == 0)
+		printf("Doc file that bai!");
+	else
+		Output(s);
+	while (true)
+	{
+		int chon = Menu();
+		if (chon == 9)
+			break;
+		Xuly(s, chon);
+	}
+	return 0;
 }
