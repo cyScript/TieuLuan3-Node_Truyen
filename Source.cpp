@@ -206,7 +206,7 @@ typedef struct Node *Stack;
 // 	}
 // 	fclose(f);
 // }
-void GhiFile(Sach s[], int n)
+void GhiFile(Sach s)
 {
 	FILE *f = fopen(TL3, "w+");
 	if (f == NULL)
